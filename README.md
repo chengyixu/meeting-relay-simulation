@@ -15,3 +15,5 @@ python3 meeting_relay.py path/to/note.txt
 ```
 
 The command reads only the supplied local file. Every output action remains `needs_confirmation`.
+
+For an owner with spaces, use the explicit local format: `Action: Alex Morgan | send the brief | Friday`.

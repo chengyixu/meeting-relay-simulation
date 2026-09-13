@@ -7,6 +7,10 @@ from __future__ import annotations
 
 import re
 
+_STRUCTURED_ACTION = re.compile(
+    r"^\s*action:\s*(?P<owner>[^|]+?)\s*\|\s*(?P<task>[^|]+?)(?:\s*\|\s*(?P<due>[^|]+?))?\s*\.?\s*$",
+    re.IGNORECASE,
+)
 _ACTION = re.compile(
     r"^\s*action:\s*(?P<owner>[^\s:]+)\s+to\s+(?P<task>.+?)(?:\s+by\s+(?P<due>[^.]+))?\.?\s*$",
     re.IGNORECASE,
@@ -31,7 +35,7 @@ def transform_note(note: str) -> dict[str, list[object]]:
                 decisions.append(decision)
             continue
 
-        action_match = _ACTION.match(line)
+        action_match = _STRUCTURED_ACTION.match(line) or _ACTION.match(line)
         if not action_match:
             continue
         owner = action_match.group("owner").strip()

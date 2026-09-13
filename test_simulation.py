@@ -18,6 +18,13 @@ class MeetingRelayTests(unittest.TestCase):
             ],
         )
 
+    def test_accepts_structured_multiword_owner_action(self):
+        result = transform_note("Action: Alex Morgan | send the launch brief | Friday")
+        self.assertEqual(
+            result["actions"],
+            [{"owner": "Alex Morgan", "task": "send the launch brief", "due": "Friday", "status": "needs_confirmation"}],
+        )
+
     def test_rejects_empty_note(self):
         with self.assertRaisesRegex(ValueError, "note must contain"):
             transform_note("   ")
