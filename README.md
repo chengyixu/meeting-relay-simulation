@@ -7,3 +7,11 @@ Run:
 ```bash
 python3 -m unittest -v
 ```
+
+Convert one local UTF-8 meeting note into JSON:
+
+```bash
+python3 meeting_relay.py path/to/note.txt
+```
+
+The command reads only the supplied local file. Every output action remains `needs_confirmation`.

@@ -24,3 +24,41 @@ class MeetingRelayTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class MeetingRelayCliTests(unittest.TestCase):
+    def test_cli_emits_json_for_local_note(self):
+        import json
+        import subprocess
+        import sys
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as directory:
+            note = Path(directory) / "note.txt"
+            note.write_text("Decision: Ship a limited pilot.\nAction: Alex to send the brief by Friday.\n")
+            result = subprocess.run(
+                [sys.executable, "meeting_relay.py", str(note)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["actions"][0]["status"], "needs_confirmation")
+
+    def test_cli_rejects_empty_local_note(self):
+        import subprocess
+        import sys
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as directory:
+            note = Path(directory) / "empty.txt"
+            note.write_text("   ")
+            result = subprocess.run(
+                [sys.executable, "meeting_relay.py", str(note)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("note must contain text", result.stderr)
